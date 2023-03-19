@@ -16,9 +16,9 @@
 import './components/index.js'
 import './dialogs/index.js'
 
-import { isMac } from '../common/browser.js'
+import { isMac } from '@svgedit/svgcanvas/common/browser'
 
-import SvgCanvas from '../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import ConfigObj from './ConfigObj.js'
 import EditorStartup from './EditorStartup.js'
 import LeftPanel from './panels/LeftPanel.js'
@@ -26,7 +26,7 @@ import TopPanel from './panels/TopPanel.js'
 import BottomPanel from './panels/BottomPanel.js'
 import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
-import { getParentsUntil } from './components/jgraduate/Util.js'
+import { getParentsUntil } from '@svgedit/svgcanvas/common/util.js'
 
 const { $id, $click, decode64, blankPageObjectURL } = SvgCanvas
 
@@ -71,7 +71,7 @@ class Editor extends EditorStartup {
     this.docprops = false
     this.configObj.preferences = false
     this.canvMenu = null
-    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW']
+    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'sv', 'tr', 'uk', 'zh-CN', 'zh-TW']
     const modKey = (isMac() ? 'meta+' : 'ctrl+')
     this.shortcuts = [
       // Shortcuts not associated with buttons
@@ -134,7 +134,10 @@ class Editor extends EditorStartup {
    */
   loadSvgString (str, { noAlert } = {}) {
     const success = this.svgCanvas.setSvgString(str) !== false
-    if (success) return
+    if (success) {
+      this.updateCanvas()
+      return
+    }
     if (!noAlert) seAlert(this.i18next.t('notification.errorLoadingSVG'))
     throw new Error('Error loading SVG')
   }

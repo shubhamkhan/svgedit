@@ -1,11 +1,10 @@
 /* eslint-disable max-len */
 /* globals seAlert */
 
-import SvgCanvas from '../../svgcanvas/svgcanvas.js'
-import { isValidUnit, getTypeMap, convertUnit } from '../../common/units.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import topPanelHTML from './TopPanel.html'
 
-const { $qa, $id, $click } = SvgCanvas
+const { $qa, $id, $click, isValidUnit, getTypeMap, convertUnit } = SvgCanvas
 
 /*
  * register actions for left panel
@@ -371,10 +370,7 @@ class TopPanel {
           $id(
             'tool_text_decoration_overline'
           ).pressed = this.editor.svgCanvas.hasTextDecoration('overline')
-          $id('tool_font_family').setAttribute(
-            'value',
-            elem.getAttribute('font-family')
-          )
+          $id('tool_font_family').value = elem.getAttribute('font-family')
           $id('tool_text_anchor').setAttribute(
             'value',
             elem.getAttribute('text-anchor')
@@ -422,6 +418,12 @@ class TopPanel {
 
       // if (elem)
     } else if (this.multiselected) {
+      // Check if all selected elements are 'text' nodes, if yes enable text panel
+      const selElems = this.editor.svgCanvas.getSelectedElements()
+      if (selElems.every((elem) => elem.tagName === 'text')) {
+        this.displayTool('text_panel')
+      }
+
       this.displayTool('multiselected_panel')
       menuItems.setAttribute('enablemenuitems', '#group')
       menuItems.setAttribute('disablemenuitems', '#ungroup')
@@ -944,6 +946,8 @@ class TopPanel {
     $click($id('tool_align_top'), () => this.clickAlign.bind(this)('top'))
     $click($id('tool_align_bottom'), () => this.clickAlign.bind(this)('bottom'))
     $click($id('tool_align_middle'), () => this.clickAlign.bind(this)('middle'))
+    $click($id('tool_align_distrib_horiz'), () => this.clickAlign.bind(this)('distrib_horiz'))
+    $click($id('tool_align_distrib_verti'), () => this.clickAlign.bind(this)('distrib_verti'))
     $click($id('tool_node_clone'), this.clonePathNode.bind(this))
     $click($id('tool_node_delete'), this.deletePathNode.bind(this))
     $click($id('tool_openclose_path'), this.opencloseSubPath.bind(this))

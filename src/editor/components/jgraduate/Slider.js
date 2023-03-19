@@ -1,4 +1,4 @@
-import { findPos } from './Util.js'
+import { findPos } from '@svgedit/svgcanvas/common/util.js'
 /**
  * Whether a value is `null` or `undefined`.
  * @param {any} val

@@ -1,19 +1,25 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
-
+import fs from 'fs'
 import codeCoverageTask from '@cypress/code-coverage/task.js'
-import { initPlugin } from 'cypress-plugin-snapshots/plugin.js'
 
 export default (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-
   // https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
   codeCoverageTask(on, config)
-  initPlugin(on, config)
+
+  on('task', {
+    readFileMaybe (filename) {
+      if (fs.existsSync(filename)) {
+        return fs.readFileSync(filename, 'utf8')
+      }
+
+      return null
+    }
+  })
+
   on('before:browser:launch', (browser, launchOptions) => {
     if (browser.name === 'chrome' && browser.isHeadless) {
       // fullPage screenshot size is 1400x1200 on non-retina screens

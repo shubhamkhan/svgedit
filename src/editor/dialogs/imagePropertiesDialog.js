@@ -1,7 +1,9 @@
 
+import SvgCanvas from '@svgedit/svgcanvas'
 /* globals svgEditor */
-import { isValidUnit } from '../../common/units.js'
 import imagePropertiesDialogHTML from './imagePropertiesDialog.html'
+
+const { isValidUnit } = SvgCanvas
 
 const template = document.createElement('template')
 template.innerHTML = imagePropertiesDialogHTML
@@ -278,7 +280,7 @@ export class SeImgPropDialog extends HTMLElement {
   connectedCallback () {
     const onChangeHandler = (ev) => {
       if (!ev.target.selectedIndex) {
-        if (this.$canvasWidth.getAttribute('value') === 'fit') {
+        if (this.$canvasWidth.value === 'fit') {
           this.$canvasWidth.removeAttribute('disabled')
           this.$canvasWidth.value = 100
           this.$canvasHeight.removeAttribute('disabled')

@@ -1,5 +1,4 @@
 /* globals seConfirm seAlert */
-import { convertUnit } from '../common/units.js'
 import {
   putLocale
 } from './locale.js'
@@ -7,7 +6,7 @@ import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js'
 import editorTemplate from './templates/editorTemplate.html'
-import SvgCanvas from '../svgcanvas/svgcanvas.js'
+import SvgCanvas from '@svgedit/svgcanvas'
 import Rulers from './Rulers.js'
 
 /**
@@ -40,7 +39,7 @@ const readySignal = () => {
   }
 }
 
-const { $id, $qq, $click } = SvgCanvas
+const { $id, $qq, $click, convertUnit } = SvgCanvas
 
 /**
  *
@@ -628,7 +627,8 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
-            const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`)
+            const extPath = this.configObj.curConfig.extPath
+            const imported = await import(`${extPath}/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`)
             const { name = extname, init: initfn } = imported.default
             return this.addExtension(name, (initfn && initfn.bind(this)), { langParam: 'en' }) /** @todo  change to current lng */
           } catch (err) {
