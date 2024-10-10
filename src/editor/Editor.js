@@ -28,7 +28,7 @@ import LayersPanel from './panels/LayersPanel.js'
 import MainMenu from './MainMenu.js'
 import { getParentsUntil } from '@svgedit/svgcanvas/common/util.js'
 
-const { $id, $click, decode64, blankPageObjectURL } = SvgCanvas
+const { $id, $click, decode64 } = SvgCanvas
 
 /**
  *
@@ -71,49 +71,249 @@ class Editor extends EditorStartup {
     this.docprops = false
     this.configObj.preferences = false
     this.canvMenu = null
-    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'sv', 'tr', 'uk', 'zh-CN', 'zh-TW']
-    const modKey = (isMac() ? 'meta+' : 'ctrl+')
+    this.goodLangs = [
+      'ar',
+      'cs',
+      'de',
+      'en',
+      'es',
+      'fa',
+      'fr',
+      'fy',
+      'hi',
+      'it',
+      'ja',
+      'nl',
+      'pl',
+      'pt-BR',
+      'ro',
+      'ru',
+      'sk',
+      'sl',
+      'sv',
+      'tr',
+      'uk',
+      'zh-CN',
+      'zh-TW'
+    ]
+
+    const modKey = isMac() ? 'meta+' : 'ctrl+'
     this.shortcuts = [
       // Shortcuts not associated with buttons
-      { key: 'ctrl+arrowleft', fn: () => { this.rotateSelected(0, 1) } },
-      { key: 'ctrl+arrowright', fn: () => { this.rotateSelected(1, 1) } },
-      { key: 'ctrl+shift+arrowleft', fn: () => { this.rotateSelected(0, 5) } },
-      { key: 'ctrl+shift+arrowright', fn: () => { this.rotateSelected(1, 5) } },
-      { key: 'shift+o', fn: () => { this.svgCanvas.cycleElement(0) } },
-      { key: 'shift+p', fn: () => { this.svgCanvas.cycleElement(1) } },
-      { key: 'tab', fn: () => { this.svgCanvas.cycleElement(0) } },
-      { key: 'shift+tab', fn: () => { this.svgCanvas.cycleElement(1) } },
-      { key: [modKey + 'arrowup', true], fn: () => { this.zoomImage(2) } },
-      { key: [modKey + 'arrowdown', true], fn: () => { this.zoomImage(0.5) } },
-      { key: [modKey + ']', true], fn: () => { this.moveUpDownSelected('Up') } },
-      { key: [modKey + '[', true], fn: () => { this.moveUpDownSelected('Down') } },
-      { key: ['arrowup', true], fn: () => { this.moveSelected(0, -1) } },
-      { key: ['arrowdown', true], fn: () => { this.moveSelected(0, 1) } },
-      { key: ['arrowleft', true], fn: () => { this.moveSelected(-1, 0) } },
-      { key: ['arrowright', true], fn: () => { this.moveSelected(1, 0) } },
-      { key: 'shift+arrowup', fn: () => { this.moveSelected(0, -10) } },
-      { key: 'shift+arrowdown', fn: () => { this.moveSelected(0, 10) } },
-      { key: 'shift+arrowleft', fn: () => { this.moveSelected(-10, 0) } },
-      { key: 'shift+arrowright', fn: () => { this.moveSelected(10, 0) } },
-      { key: ['alt+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -1) } },
-      { key: ['alt+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 1) } },
-      { key: ['alt+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-1, 0) } },
-      { key: ['alt+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(1, 0) } },
-      { key: ['alt+shift+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -10) } },
-      { key: ['alt+shift+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10) } },
-      { key: ['alt+shift+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0) } },
-      { key: ['alt+shift+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0) } },
+      {
+        key: ['ctrl+arrowleft', true],
+        fn: () => {
+          this.rotateSelected(0, 1)
+        }
+      },
+      {
+        key: 'ctrl+arrowright',
+        fn: () => {
+          this.rotateSelected(1, 1)
+        }
+      },
+      {
+        key: ['ctrl+shift+arrowleft', true],
+        fn: () => {
+          this.rotateSelected(0, 5)
+        }
+      },
+      {
+        key: 'ctrl+shift+arrowright',
+        fn: () => {
+          this.rotateSelected(1, 5)
+        }
+      },
+      {
+        key: 'shift+o',
+        fn: () => {
+          this.svgCanvas.cycleElement(0)
+        }
+      },
+      {
+        key: 'shift+p',
+        fn: () => {
+          this.svgCanvas.cycleElement(1)
+        }
+      },
+      {
+        key: 'tab',
+        fn: () => {
+          this.svgCanvas.cycleElement(0)
+        }
+      },
+      {
+        key: 'shift+tab',
+        fn: () => {
+          this.svgCanvas.cycleElement(1)
+        }
+      },
+      {
+        key: [modKey + 'arrowup', true],
+        fn: () => {
+          this.zoomImage(2)
+        }
+      },
+      {
+        key: [modKey + 'arrowdown', true],
+        fn: () => {
+          this.zoomImage(0.5)
+        }
+      },
+      {
+        key: [modKey + ']', true],
+        fn: () => {
+          this.moveUpDownSelected('Up')
+        }
+      },
+      {
+        key: [modKey + '[', true],
+        fn: () => {
+          this.moveUpDownSelected('Down')
+        }
+      },
+      {
+        key: ['arrowup', true],
+        fn: () => {
+          this.moveSelected(0, -1)
+        }
+      },
+      {
+        key: ['arrowdown', true],
+        fn: () => {
+          this.moveSelected(0, 1)
+        }
+      },
+      {
+        key: ['arrowleft', true],
+        fn: () => {
+          this.moveSelected(-1, 0)
+        }
+      },
+      {
+        key: ['arrowright', true],
+        fn: () => {
+          this.moveSelected(1, 0)
+        }
+      },
+      {
+        key: 'shift+arrowup',
+        fn: () => {
+          this.moveSelected(0, -10)
+        }
+      },
+      {
+        key: 'shift+arrowdown',
+        fn: () => {
+          this.moveSelected(0, 10)
+        }
+      },
+      {
+        key: 'shift+arrowleft',
+        fn: () => {
+          this.moveSelected(-10, 0)
+        }
+      },
+      {
+        key: 'shift+arrowright',
+        fn: () => {
+          this.moveSelected(10, 0)
+        }
+      },
+      {
+        key: ['alt+arrowup', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(0, -1)
+        }
+      },
+      {
+        key: ['alt+arrowdown', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(0, 1)
+        }
+      },
+      {
+        key: ['alt+arrowleft', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(-1, 0)
+        }
+      },
+      {
+        key: ['alt+arrowright', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(1, 0)
+        }
+      },
+      {
+        key: ['alt+shift+arrowup', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(0, -10)
+        }
+      },
+      {
+        key: ['alt+shift+arrowdown', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(0, 10)
+        }
+      },
+      {
+        key: ['alt+shift+arrowleft', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(-10, 0)
+        }
+      },
+      {
+        key: ['alt+shift+arrowright', true],
+        fn: () => {
+          this.svgCanvas.cloneSelectedElements(10, 0)
+        }
+      },
       {
         key: ['delete/backspace', true],
         fn: () => {
-          if (this.selectedElement || this.multiselected) { this.svgCanvas.deleteSelectedElements() }
+          if (this.selectedElement || this.multiselected) {
+            this.svgCanvas.deleteSelectedElements()
+          }
         }
       },
-      { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer() } },
-      { key: modKey + 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer() } },
-      { key: modKey + 'x', fn: () => { this.cutSelected() } },
-      { key: modKey + 'c', fn: () => { this.copySelected() } },
-      { key: modKey + 'v', fn: () => { this.pasteInCenter() } }
+      {
+        key: 'a',
+        fn: () => {
+          this.svgCanvas.selectAllInCurrentLayer()
+        }
+      },
+      {
+        key: [modKey + 'a', true],
+        fn: () => {
+          this.svgCanvas.selectAllInCurrentLayer()
+        }
+      },
+      {
+        key: modKey + 'x',
+        fn: () => {
+          this.cutSelected()
+        }
+      },
+      {
+        key: modKey + 'c',
+        fn: () => {
+          this.copySelected()
+        }
+      },
+      {
+        key: modKey + 'v',
+        fn: () => {
+          this.pasteInCenter()
+        }
+      },
+      {
+        key: 'escape',
+        fn: () => {
+          if (this.enableToolCancel) {
+            this.cancelTool()
+          }
+        }
+      }
     ]
     this.leftPanel = new LeftPanel(this)
     this.bottomPanel = new BottomPanel(this)
@@ -197,14 +397,16 @@ class Editor extends EditorStartup {
     this.svgCanvas.randomizeIds(arg)
   }
 
-  /** @lends module:SVGEditor~Actions */
   /**
+   *  @lends module:SVGEditor~Actions */
+  /**
+   * editor shortcuts init
    * @returns {void}
    */
   setAll () {
     const keyHandler = {} // will contain the action for each pressed key
 
-    this.shortcuts.forEach(shortcut => {
+    this.shortcuts.forEach((shortcut) => {
       // Bind function to shortcut key
       if (shortcut.key) {
         // Set shortcut based on options
@@ -218,14 +420,14 @@ class Editor extends EditorStartup {
         }
         keyval = String(keyval)
         const { fn } = shortcut
-        keyval.split('/').forEach(key => {
+        keyval.split('/').forEach((key) => {
           keyHandler[key] = { fn, pd }
         })
       }
       return true
     })
     // register the keydown event
-    document.addEventListener('keydown', e => {
+    document.addEventListener('keydown', (e) => {
       // only track keyboard shortcuts for the body containing the SVG-Editor
       if (e.target.nodeName !== 'BODY') return
       // normalize key
@@ -282,7 +484,7 @@ class Editor extends EditorStartup {
    * @returns {module:SVGthis.ToolButton}
    */
   getButtonData (sel) {
-    return Object.values(this.shortcuts).find(btn => {
+    return Object.values(this.shortcuts).find((btn) => {
       return btn.sel === sel
     })
   }
@@ -295,9 +497,7 @@ class Editor extends EditorStartup {
    */
   exportHandler (win, data) {
     const { issues, exportWindowName } = data
-
-    this.exportWindow = window.open(blankPageObjectURL || '', exportWindowName) // A hack to get the window via JSON-able name without opening a new one
-
+    this.exportWindow = window.open('', exportWindowName) // A hack to get the window via JSON-able name without opening a new one
     if (!this.exportWindow || this.exportWindow.closed) {
       seAlert(this.i18next.t('notification.popupWindowBlocked'))
       return
@@ -319,7 +519,6 @@ class Editor extends EditorStartup {
           pre +
           issues.join(pre)
       }
-
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
       this.configObj.pref('export_notice_done', 'all')
@@ -353,7 +552,9 @@ class Editor extends EditorStartup {
     const { workarea } = this
     const cnvs = $id('svgcanvas')
 
-    let w = parseFloat(getComputedStyle(workarea, null).width.replace('px', ''))
+    let w = parseFloat(
+      getComputedStyle(workarea, null).width.replace('px', '')
+    )
     let h = parseFloat(
       getComputedStyle(workarea, null).height.replace('px', '')
     )
@@ -447,9 +648,8 @@ class Editor extends EditorStartup {
       }
     `
     if (document.querySelectorAll('#wireframe_rules').length > 0) {
-      document.querySelector(
-        '#wireframe_rules'
-      ).textContent = this.workarea.classList.contains('wireframe') ? rule : ''
+      document.querySelector('#wireframe_rules').textContent =
+        this.workarea.classList.contains('wireframe') ? rule : ''
     }
   }
 
@@ -470,7 +670,7 @@ class Editor extends EditorStartup {
     const isNode = mode === 'pathedit'
     // if this.elems[1] is present, then we have more than one element
     this.selectedElement = elems.length === 1 || !elems[1] ? elems[0] : null
-    this.multiselected = elems.length >= 2 && elems[1]
+    this.multiselected = elems.length >= 2 && !!elems[1]
     if (this.selectedElement && !isNode) {
       this.topPanel.update()
     } // if (elem)
@@ -541,7 +741,7 @@ class Editor extends EditorStartup {
       this.leftPanel.clickSelect()
     }
 
-    elems.forEach(elem => {
+    elems.forEach((elem) => {
       const isSvgElem = elem?.tagName === 'svg'
       if (isSvgElem || this.svgCanvas.isLayer(elem)) {
         this.layersPanel.populateLayers()
@@ -596,18 +796,14 @@ class Editor extends EditorStartup {
    * @returns {void}
    */
   afterClear (win) {
-    this.svgCanvas.runExtensions(
-      'afterClear'
-    )
+    this.svgCanvas.runExtensions('afterClear')
   }
 
   /**
    * @returns {void}
    */
   beforeClear (win) {
-    this.svgCanvas.runExtensions(
-      'beforeClear'
-    )
+    this.svgCanvas.runExtensions('beforeClear')
   }
 
   /**
@@ -637,6 +833,7 @@ class Editor extends EditorStartup {
    * @param {module:svgcanvas.SvgCanvas#event:zoomed} bbox
    * @param {boolean} autoCenter
    * @listens module:svgcanvas.SvgCanvas#event:zoomed
+   * @fires module:svgcanvas.SvgCanvas#event:ext_zoomChanged
    * @returns {void}
    */
   zoomChanged (win, bbox, autoCenter) {
@@ -678,6 +875,11 @@ class Editor extends EditorStartup {
     }
 
     this.zoomDone()
+
+    this.svgCanvas.runExtensions(
+      'zoomChanged',
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ this.svgCanvas.getZoom()
+    )
   }
 
   /**
@@ -1138,7 +1340,7 @@ class Editor extends EditorStartup {
     return this.ready(() => {
       return new Promise((resolve, reject) => {
         fetch(url, { cache: cache ? 'force-cache' : 'no-cache' })
-          .then(response => {
+          .then((response) => {
             if (!response.ok) {
               if (noAlert) {
                 reject(new Error('URLLoadFail'))
@@ -1149,16 +1351,18 @@ class Editor extends EditorStartup {
             }
             return response.text()
           })
-          .then(str => {
+          .then((str) => {
             this.loadSvgString(str, { noAlert })
             return str
           })
-          .catch(error => {
+          .catch((error) => {
             if (noAlert) {
               reject(new Error('URLLoadFail'))
               return
             }
-            seAlert(this.i18next.t('notification.URLLoadFail') + ': \n' + error)
+            seAlert(
+              this.i18next.t('notification.URLLoadFail') + ': \n' + error
+            )
             resolve()
           })
       })

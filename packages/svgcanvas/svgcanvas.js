@@ -308,6 +308,9 @@ class SvgCanvas {
     this.contentW = this.getResolution().w
     this.contentH = this.getResolution().h
     this.clear()
+
+    // creates custom modeEvent for editor
+    this.modeChangeEvent()
   } // End constructor
 
   getSvgOption () {
@@ -827,6 +830,11 @@ class SvgCanvas {
         ? this.curText
         : this.curShape
     this.currentMode = name
+
+    // fires modeChange event for the editor
+    if (this.modeEvent) {
+      document.dispatchEvent(this.modeEvent)
+    }
   }
 
   /**
@@ -1283,6 +1291,7 @@ class SvgCanvas {
     this.hasMatrixTransform = hasMatrixTransform
     this.transformListToTransform = transformListToTransform
     this.convertToNum = convertToNum
+    this.convertUnit = convertUnit
     this.findDefs = findDefs
     this.getUrlFromAttr = getUrlFromAttr
     this.getHref = getHref
@@ -1327,6 +1336,14 @@ class SvgCanvas {
     this.encode64 = encode64
     this.decode64 = decode64
     this.mergeDeep = mergeDeep
+  }
+
+  /**
+   * Creates modeChange event, adds it as an svgCanvas property
+   * **/
+  modeChangeEvent () {
+    const modeEvent = new CustomEvent('modeChange', { detail: { getMode: () => this.getMode() } })
+    this.modeEvent = modeEvent
   }
 } // End class
 

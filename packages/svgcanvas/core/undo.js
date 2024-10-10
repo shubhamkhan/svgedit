@@ -13,7 +13,7 @@ import {
   isGecko
 } from '../common/browser.js'
 import {
-  transformPoint, transformListToTransform
+  transformPoint, transformListToTransform, getTransformList
 } from './math.js'
 
 const {
@@ -167,8 +167,8 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
     // Set x,y vals on elements that don't have them
     if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
       const bbox = getStrokedBBoxDefaultVisible([elem])
-      const diffX = attr === 'x' ? newValue - bbox.x : 0
-      const diffY = attr === 'y' ? newValue - bbox.y : 0
+      const diffX = attr === 'x' ? parseFloat(newValue) - bbox.x : 0
+      const diffY = attr === 'y' ? parseFloat(newValue) - bbox.y : 0
       svgCanvas.moveSelectedElements(diffX * zoom, diffY * zoom, true)
       continue
     }
@@ -189,7 +189,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       } else if (attr === '#href') {
         setHref(elem, newValue)
       } else if (newValue) {
-        elem.setAttribute(attr, newValue)
+        elem.setAttribute(attr, isNaN(parseFloat(newValue)) ? newValue : parseFloat(newValue))
       } else if (typeof newValue === 'number') {
         elem.setAttribute(attr, newValue)
       } else {
@@ -228,7 +228,7 @@ export const changeSelectedAttributeNoUndoMethod = (attr, newValue, elems) => {
       // we need to update the rotational transform attribute
       const angle = getRotationAngle(elem)
       if (angle !== 0 && attr !== 'transform') {
-        const tlist = elem.transform?.baseVal
+        const tlist = getTransformList(elem)
         let n = tlist.numberOfItems
         while (n--) {
           const xform = tlist.getItem(n)
